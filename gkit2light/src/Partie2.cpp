@@ -92,14 +92,27 @@ struct BVH
 
     Hit intersect( const Ray& ray ) const
     {
+        bool flag = true;
         Hit hit;
         float tmax= ray.tmax;
         for(int id= 0; id < int(triangles.size()); id++)
             // ne renvoie vrai que si l'intersection existe dans l'intervalle [0 tmax]
             if(Hit h= triangles[id].intersect(ray, tmax))
             {
-                hit= h;
-                tmax= h.t;
+                if(flag)
+                {
+                    hit= h;
+                    tmax= h.t;
+                    flag = false;
+                }
+                else
+                {
+                    if(h.t < hit.t)
+                    {
+                        hit= h;
+                        tmax= h.t;
+                    }
+                }
             }
 
         return hit;
@@ -169,8 +182,12 @@ protected:
 
 int main( const int argc, const char **argv )
 {
-    const char *mesh_filename= "shadow.obj";
-    const char *orbiter_filename= "Shadow.txt";
+    const char *mesh_filename= "cornell.obj";
+    const char *orbiter_filename= "orbiter.txt";
+
+
+    //const char *mesh_filename= "cornell.obj";
+    //const char *orbiter_filename= "orbiter.txt";
 
     if(argc > 1) mesh_filename= argv[1];
     if(argc > 2) orbiter_filename= argv[2];
@@ -233,11 +250,20 @@ int main( const int argc, const char **argv )
                 Point p= point(hit, ray);               // point d'intersection
                 Vector pn= normal(hit, triangle);       // normale interpolee du triangle au point d'intersection
                 if(dot(pn, ray.d) > 0)                  // retourne la normale vers l'origine du rayon
-                    pn= -pn;
+                    pn = -pn;
+
+                   // Phong
+                Vector viewDir = normalize(ray.d);
+                Vector reflectDir = viewDir - 2.0 * dot(pn, viewDir) * pn;
+                float spec = pow(std::max(dot(viewDir, reflectDir), 0.0f), 64);
+
+                Color Specular = 0.8 * spec * mesh.triangle_material(hit.triangle_id).specular;
+                Color Diffuse = mesh.triangle_material(hit.triangle_id).diffuse* std::max(0.0f, dot(normalize(-pn), normalize(ray.d))) ;
+                Color Emission = mesh.triangle_material(hit.triangle_id).emission;
 
                 // couleur du pixel
                 Color color= Black();
-
+                float factor = 0.0f;
                  // genere des directions autour de p
                 int n = 256; // nombre directions
                 UniformDirection directions(n, pn);            // genere des directions uniformes 1 / 2pi
@@ -246,7 +272,12 @@ int main( const int argc, const char **argv )
                 for(int i= 0; i < directions.size(); i++)
                 {
                     // genere une direction
-                    Vector w= directions(u01(rng), u01(rng));
+                    //Vector w= directions(u01(rng), u01(rng)); // directions aléatoires
+
+
+                    float cos0 = ( 1.0f - (2.0f*i + 1.0f)/(2.0f * n)); //  spirale de Fibonacci
+                    float perturbation = (std::sqrt(5.0) + 1.0f)/2.0f;
+                    Vector w= directions(cos0, (i*1.0f+0.5f)/perturbation);
 
                     // teste le rayon dans cette direction
                     Ray shadow(p + pn * .001f, p + w * scale);
@@ -267,11 +298,20 @@ int main( const int argc, const char **argv )
                         // et l'estimateur monte carlo s'ecrit :
                         // L_r(p, w)= 1/n \sum { 1/pi * V(hit(p, w_i), p) * cos \theta_i } / { pdf(w_i) }
 
-                        float cosTheta = std::max(0.0f, dot(normalize(pn), normalize(shadow.d)) );
-                        color = color + cosTheta* (1/M_PI) * Color(0.4f,0.4f,0.4f,0.4) / directions.pdf(w) ;
+                        float cos_theta_i =  abs(dot(normalize(pn), normalize(w)));
+
+                        /*
+                        float cos0 = 1.0f - (2.0f*i + 1.0f)/(2.0f * n);
+                        float pert = (std::sqrt(5.0) + 1.0f)/2.0f;
+                        float phi= 2.f * float(M_PI) * (i + 0.5)/pert;
+                        float sin_theta= std::sqrt(std::max(0.f, 1.f - cos0*cos0));
+                        Vector wi = Vector(std::cos(phi) * sin_theta, std::sin(phi) * sin_theta, cos0);
+                        */
+                        factor += ( cos_theta_i * (1.0/M_PI) / directions.pdf(w) )/n*1.0 ;
                     }
                 }
-                color = color/n;
+                Color Ambient = Color(0.3);
+                color = Diffuse +  Ambient* factor  ;
                 image(px, py)= Color(color, 1);
             }
         }

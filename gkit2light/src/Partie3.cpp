@@ -497,8 +497,20 @@ protected:
 
 int main( const int argc, const char **argv )
 {
-    const char *mesh_filename= "fruit_v2.obj";
-    const char *orbiter_filename= "fruit_v2.txt";
+    //const char *mesh_filename= "fruit_v2.obj";
+    //const char *orbiter_filename= "fruit_v2.txt"; // Scene 1
+    // Triangles: 207 226 SAH cost: 40,48  nodes: 414451
+
+
+    //const char *mesh_filename= "Lighting_Challenge_24_theCabin.obj";
+    //const char *orbiter_filename= "light.txt"; // Scene 2
+    // Triangles: 422 735 SAH cost: 29.9  nodes: 845469
+
+     const char *mesh_filename= "TheCarnival.obj";
+     const char *orbiter_filename= "carnival.txt"; // Scene 3
+    // Triangles: 449 858 SAH cost: 21,7 nodes: 889715
+
+
     if(argc > 1) mesh_filename= argv[1];
 
     Mesh mesh= read_mesh(mesh_filename);
@@ -637,13 +649,13 @@ int main( const int argc, const char **argv )
 
                 ambient =  ambient/n;
                 */
-                image(px, py)= Color(Diffuse + Emission + Specular, 1);
+                image(px, py)= Color( (Diffuse + Emission + Specular), 1);
             }
         }
     }
 
 
-    write_image(image, "Partie_3.png");
+    write_image(image, "Partie_3_Carnival.png");
 
     return 0;
 }

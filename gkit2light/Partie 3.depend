@@ -229,3 +229,19 @@
 	"glcore.h"
 	"window.h"
 
+1550458562 source:/home/pin/Desktop/Github/ComputeShader/gkit2light/src/Partie3.cpp
+	<cfloat>
+	<cassert>
+	<random>
+	<chrono>
+	<vector>
+	<algorithm>
+	<chrono>
+	"vec.h"
+	"mesh.h"
+	"wavefront.h"
+	"orbiter.h"
+	"image.h"
+	"image_io.h"
+	"image_hdr.h"
+

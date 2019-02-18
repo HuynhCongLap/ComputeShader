@@ -229,3 +229,20 @@
 	"glcore.h"
 	"window.h"
 
+1550505165 source:/home/pin/Desktop/Github/ComputeShader/gkit2light/src/Partie2.cpp
+	<cfloat>
+	<random>
+	<chrono>
+	"vec.h"
+	"mesh.h"
+	"wavefront.h"
+	"orbiter.h"
+	"../include/ray.h"
+	"image.h"
+	"image_io.h"
+	"image_hdr.h"
+
+1550417319 /home/pin/Desktop/Github/ComputeShader/gkit2light/include/ray.h
+	<cfloat>
+	"vec.h"
+
