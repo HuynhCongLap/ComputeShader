@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="gKit2light">
+		<Project filename="shader_kit.cbp" active="1">
+		</Project>
+		<Project filename="image_viewer.cbp">
+		</Project>
+		<Project filename="Partie 1.cbp">
+		</Project>
+		<Project filename="Partie 2.cbp">
+		</Project>
+		<Project filename="Partie 3.cbp">
+		</Project>
+		<Project filename="Partie 4.cbp">
+		</Project>
+	</Workspace>
+</CodeBlocks_workspace_file>
