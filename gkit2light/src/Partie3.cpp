@@ -497,8 +497,8 @@ protected:
 
 int main( const int argc, const char **argv )
 {
-    //const char *mesh_filename= "fruit_v2.obj";
-    //const char *orbiter_filename= "fruit_v2.txt"; // Scene 1
+    const char *mesh_filename= "fruit_v2.obj";
+    const char *orbiter_filename= "fruit_v2.txt"; // Scene 1
     // Triangles: 207 226 SAH cost: 40,48  nodes: 414451
 
 
@@ -506,8 +506,8 @@ int main( const int argc, const char **argv )
     //const char *orbiter_filename= "light.txt"; // Scene 2
     // Triangles: 422 735 SAH cost: 29.9  nodes: 845469
 
-    const char *mesh_filename= "TheCarnival.obj";
-    const char *orbiter_filename= "carnival.txt"; // Scene 3
+    //const char *mesh_filename= "TheCarnival.obj";
+    //const char *orbiter_filename= "carnival.txt"; // Scene 3
     // Triangles: 449 858 SAH cost: 21,7 nodes: 889715
 
 
@@ -635,7 +635,7 @@ int main( const int argc, const char **argv )
                 }
 
                 Color Ambient = Color(1.0);
-                color = Ambient* factor* std::max(0.0f, dot(normalize(-pn), normalize(ray.d)))  ;
+                color = Ambient* factor  ;
 
                 image(px, py)= Color(color, 1);
             }

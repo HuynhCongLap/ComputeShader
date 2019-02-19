@@ -29,6 +29,10 @@ uniform triangleData
 	Triangle triangles[1024];
 };
 
+vec3 normal( const float hitu, const float hitv, const Triangle triangle )
+{
+    return normalize( (1 - hitu - hitv) * (triangle.ab + triangle.ac) + hitu * triangle.ab + hitv * triangle.ac) ;
+}
 
 bool intersect( const Triangle triangle, const vec3 o, const vec3 d, const float tmax, out float rt, out float ru, out float rv )
 {
@@ -60,6 +64,7 @@ uniform int triangle_count;
 in vec2 position;
 out vec4 fragment_color;
 
+
 void main( )
 {
 	// construction du rayon pour le pixel, passage depuis le repere projectif
@@ -74,6 +79,7 @@ void main( )
 	float hitu= 0;
 	float hitv= 0;
 	int hitid= 0;
+
 	for(int i= 0; i < triangle_count; i++)
 	{
 		float t, u, v;
@@ -85,7 +91,11 @@ void main( )
 			hitid= i;
 		}
 	}
+
+	vec3 normal = normal(hitu, hitv, triangles[hitid]);
+	vec3 light = vec3(1.0);
+	vec3 diffuse = light*max(0.0 ,dot( normalize(normal), normalize (  -d )));		
 	
-	fragment_color= vec4(hitu, hitv, 0, 1);
+	fragment_color= vec4(diffuse, 1);
 }
 #endif
