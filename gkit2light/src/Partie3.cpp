@@ -596,19 +596,20 @@ int main( const int argc, const char **argv )
 
 
                   // Phong
-                //Vector viewDir = normalize(ray.d);
-                //Vector reflectDir = normalize(viewDir - 2.0 * dot(pn, viewDir) * pn);
-                //float spec = pow(std::max(dot(viewDir, reflectDir), 0.0f), 64);
+                Vector viewDir = normalize(ray.d);
+                Vector reflectDir = normalize(viewDir - 2.0 * dot(pn, viewDir) * pn);
+                float spec = pow(std::max(dot(viewDir, reflectDir), 0.0f), 64);
 
-                //Color Specular = 0.8 * spec * mesh.triangle_material(hit.triangle_id).specular;
-                //Color Diffuse = mesh.triangle_material(hit.triangle_id).diffuse* std::max(0.0f, dot(normalize(-pn), normalize(ray.d))) ;
-                //Color Emission = mesh.triangle_material(hit.triangle_id).emission;
+                Color Specular = 0.8 * spec * mesh.triangle_material(hit.triangle_id).specular;
+                Color Diffuse = mesh.triangle_material(hit.triangle_id).diffuse* std::max(0.0f, dot(normalize(-pn), normalize(ray.d))) ;
+                Color Emission = mesh.triangle_material(hit.triangle_id).emission;
 
                 // couleur du pixel
                 Color color= Black();
                 float factor = 0.0f;
-                // genere des directions autour de p
-                int n = 64; // nombre directions
+
+
+                int n = 32; // nombre directions
                 UniformDirection directions(n, pn);            // genere des directions uniformes 1 / 2pi
                 const float scale= 10;
 
@@ -616,19 +617,18 @@ int main( const int argc, const char **argv )
                 {
                     //******************Directions aléatoires*************************
                     // genere une direction
-                    Vector w= directions(u01(rng), u01(rng)); //
+                    //Vector w= directions(u01(rng), u01(rng)); //
                     //*******************************************
 
                     //****************Spirale de Fibonacci***************************
-                    //float cos0 = ( 1.0f - (2.0f*i + 1.0f)/(2.0f * n)); //  spirale de Fibonacci
-                    //float perturbation = (std::sqrt(5.0) + 1.0f)/2.0f;
-                    //Vector w= directions(cos0, (i*1.0f+0.5f)/perturbation);
+                      float cos0 = ( 1.0f - (2.0f*i + 1.0f)/(2.0f * n)); //  spirale de Fibonacci
+                      float perturbation = (std::sqrt(5.0) + 1.0f)/2.0f;
+                      Vector w= directions(cos0, (i*1.0f+0.5f)/perturbation);
                     //*******************************************
                     // teste le rayon dans cette direction
                     Ray shadow(p + pn * .001f, p + w * scale);
                     if(bvh.visible(shadow))
                     {
-
                         float cos_theta_i =  abs(dot(normalize(pn), normalize(w)));
                         factor += (cos_theta_i * (1.0/M_PI) / directions.pdf(w) )/n*1.0 ;
                     }
@@ -636,14 +636,15 @@ int main( const int argc, const char **argv )
 
                 Color Ambient = Color(1.0);
                 color = Ambient* factor  ;
+                image(px, py)= Color( color, 1);
 
-                image(px, py)= Color(color, 1);
+               // image(px, py)= Color(Diffuse + Specular + Emission, 1);
             }
         }
     }
 
 
-    write_image(image, "Partie_3_Carnival_Ambient_64.png");
+    write_image(image, "Partie_3_Ambient_Fruit_Test.png");
 
     return 0;
 }

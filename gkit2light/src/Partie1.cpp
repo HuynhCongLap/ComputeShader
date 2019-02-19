@@ -131,11 +131,10 @@ struct BVH
 
 int main( const int argc, const char **argv )
 {
-    const char *mesh_filename= "shadow.obj";
-    const char *orbiter_filename= "Shadow.txt";
+    //const char *mesh_filename= "shadow.obj";
+    //const char *orbiter_filename= "Shadow.txt";
 
-    //const char *mesh_filename= "cornell.obj";
-    //
+    const char *mesh_filename= "cornell.obj";
     const char *orbiter_filename= "orbiter.txt";
 
     if(argc > 1) mesh_filename= argv[1];
@@ -211,7 +210,7 @@ int main( const int argc, const char **argv )
                 Color Ambient(0.01); // Not yet global illumination
                 Color Diffuse = mesh.triangle_material(hit.triangle_id).diffuse* std::max(0.0f, dot(normalize(-pn), normalize(ray.d))) ;
                 Color Emission = mesh.triangle_material(hit.triangle_id).emission;
-                Color color=   Diffuse + Emission + Specular + Ambient  ;
+                Color color=   Diffuse + Emission + Specular ;
                 image(px, py)= Color(color, 1);
             }
             else

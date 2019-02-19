@@ -185,10 +185,6 @@ int main( const int argc, const char **argv )
     const char *mesh_filename= "cornell.obj";
     const char *orbiter_filename= "orbiter.txt";
 
-
-    //const char *mesh_filename= "cornell.obj";
-    //const char *orbiter_filename= "orbiter.txt";
-
     if(argc > 1) mesh_filename= argv[1];
     if(argc > 2) orbiter_filename= argv[2];
 
@@ -277,7 +273,7 @@ int main( const int argc, const char **argv )
                     Vector w= directions(u01(rng), u01(rng)); //
                 //*******************************************
 
-                //****************Spirale de Fibonacci***************************
+                //****************Directions Spirale de Fibonacci***************************
                     //float cos0 = ( 1.0f - (2.0f*i + 1.0f)/(2.0f * n)); //  spirale de Fibonacci
                     //float perturbation = (std::sqrt(5.0) + 1.0f)/2.0f;
                     //Vector w= directions(cos0, (i*1.0f+0.5f)/perturbation);
