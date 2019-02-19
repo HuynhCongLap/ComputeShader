@@ -197,8 +197,8 @@ struct BVH
 
      bool visible( const Ray& ray ) const
     {
-        for(int id= 0; id < int(triangles.size()); id++)
-            if(triangles[id].intersect(ray, ray.tmax))
+
+            if(Hit hit= intersect(ray))
                 return false;
 
         return true;
@@ -506,8 +506,8 @@ int main( const int argc, const char **argv )
     //const char *orbiter_filename= "light.txt"; // Scene 2
     // Triangles: 422 735 SAH cost: 29.9  nodes: 845469
 
-     const char *mesh_filename= "TheCarnival.obj";
-     const char *orbiter_filename= "carnival.txt"; // Scene 3
+    const char *mesh_filename= "TheCarnival.obj";
+    const char *orbiter_filename= "carnival.txt"; // Scene 3
     // Triangles: 449 858 SAH cost: 21,7 nodes: 889715
 
 
@@ -596,66 +596,54 @@ int main( const int argc, const char **argv )
 
 
                   // Phong
-                Vector viewDir = normalize(ray.d);
-                Vector reflectDir = viewDir - 2.0 * dot(pn, viewDir) * pn;
-                float spec = pow(std::max(dot(viewDir, reflectDir), 0.0f), 64);
+                //Vector viewDir = normalize(ray.d);
+                //Vector reflectDir = normalize(viewDir - 2.0 * dot(pn, viewDir) * pn);
+                //float spec = pow(std::max(dot(viewDir, reflectDir), 0.0f), 64);
 
-                Color Specular = 0.8 * spec * mesh.triangle_material(hit.triangle_id).specular;
-                Color Diffuse = mesh.triangle_material(hit.triangle_id).diffuse* std::max(0.0f, dot(normalize(-pn), normalize(ray.d))) ;
-                Color Emission = mesh.triangle_material(hit.triangle_id).emission;
+                //Color Specular = 0.8 * spec * mesh.triangle_material(hit.triangle_id).specular;
+                //Color Diffuse = mesh.triangle_material(hit.triangle_id).diffuse* std::max(0.0f, dot(normalize(-pn), normalize(ray.d))) ;
+                //Color Emission = mesh.triangle_material(hit.triangle_id).emission;
 
                 // couleur du pixel
-                Color ambient= Black();
-
+                Color color= Black();
+                float factor = 0.0f;
                 // genere des directions autour de p
                 int n = 64; // nombre directions
                 UniformDirection directions(n, pn);            // genere des directions uniformes 1 / 2pi
                 const float scale= 10;
 
-               /* for(int i= 0; i < directions.size(); i++)
+                for(int i= 0; i < directions.size(); i++)
                 {
-
+                    //******************Directions aléatoires*************************
                     // genere une direction
-                    Vector w= directions(u01(rng), u01(rng));
+                    Vector w= directions(u01(rng), u01(rng)); //
+                    //*******************************************
 
+                    //****************Spirale de Fibonacci***************************
+                    //float cos0 = ( 1.0f - (2.0f*i + 1.0f)/(2.0f * n)); //  spirale de Fibonacci
+                    //float perturbation = (std::sqrt(5.0) + 1.0f)/2.0f;
+                    //Vector w= directions(cos0, (i*1.0f+0.5f)/perturbation);
+                    //*******************************************
                     // teste le rayon dans cette direction
                     Ray shadow(p + pn * .001f, p + w * scale);
                     if(bvh.visible(shadow))
                     {
 
-                        // calculer l'eclairage ambient :
-                        // en partant de la formulation de l'eclairage direct :
-                        // L_r(p, o) = \int L_i(p, w) * f_r(p, w -> o) * cos \theta dw
-                        // avec
-                        // L_i(p, w) = L_e(hit(p, w), -w) * V(hit(p, w), p)
-                        // L_e(q, v) = 1
-                        // donc L_i(p, w)= V(hit(p, w), p)
-                        // f_r() = 1 / pi
-
-                        // donc
-                        // L_r(p, w)= \int 1/pi * V(hit(p, w), p) cos \theta dw
-
-                        // et l'estimateur monte carlo s'ecrit :
-                        // L_r(p, w)= 1/n \sum { 1/pi * V(hit(p, w_i), p) * cos \theta_i } / { pdf(w_i) }
-                        float cosTheta = std::max(0.0f, dot(normalize(pn), normalize(shadow.d)) );
-
-
-
-                        //color = color + cosTheta* (1/M_PI) *Color(0.03,0.03,0.03,1.0) ;
-
-                        ambient = ambient + cosTheta* (1/M_PI) * Color(1.0f,1.0f,1.0f,1.0) / directions.pdf(w) ;
+                        float cos_theta_i =  abs(dot(normalize(pn), normalize(w)));
+                        factor += (cos_theta_i * (1.0/M_PI) / directions.pdf(w) )/n*1.0 ;
                     }
                 }
 
-                ambient =  ambient/n;
-                */
-                image(px, py)= Color( (Diffuse + Emission + Specular), 1);
+                Color Ambient = Color(1.0);
+                color = Ambient* factor* std::max(0.0f, dot(normalize(-pn), normalize(ray.d)))  ;
+
+                image(px, py)= Color(color, 1);
             }
         }
     }
 
 
-    write_image(image, "Partie_3_Carnival.png");
+    write_image(image, "Partie_3_Carnival_Ambient_64.png");
 
     return 0;
 }

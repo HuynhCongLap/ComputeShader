@@ -131,11 +131,12 @@ struct BVH
 
 int main( const int argc, const char **argv )
 {
-    //const char *mesh_filename= "shadow.obj";
-    //const char *orbiter_filename= "Shadow.txt";
+    const char *mesh_filename= "shadow.obj";
+    const char *orbiter_filename= "Shadow.txt";
 
-    const char *mesh_filename= "fruit_v2.obj";
-    const char *orbiter_filename= "fruit_v2.txt";
+    //const char *mesh_filename= "cornell.obj";
+    //
+    const char *orbiter_filename= "orbiter.txt";
 
     if(argc > 1) mesh_filename= argv[1];
     if(argc > 2) orbiter_filename= argv[2];
@@ -203,14 +204,14 @@ int main( const int argc, const char **argv )
 
                 // Phong
                 Vector viewDir = normalize(ray.d);
-                Vector reflectDir = viewDir - 2.0 * dot(pn, viewDir) * pn;
+                Vector reflectDir = normalize(viewDir - 2.0 * dot(pn, viewDir) * pn);
                 float spec = pow(std::max(dot(viewDir, reflectDir), 0.0f), 32);
                 Color Specular = 0.5 * spec * mesh.triangle_material(hit.triangle_id).specular;
 
                 Color Ambient(0.01); // Not yet global illumination
                 Color Diffuse = mesh.triangle_material(hit.triangle_id).diffuse* std::max(0.0f, dot(normalize(-pn), normalize(ray.d))) ;
                 Color Emission = mesh.triangle_material(hit.triangle_id).emission;
-                Color color=  Ambient + Diffuse + Emission + Specular ;
+                Color color=   Diffuse + Emission + Specular + Ambient  ;
                 image(px, py)= Color(color, 1);
             }
             else
@@ -225,8 +226,8 @@ int main( const int argc, const char **argv )
     printf("cpu  %ds %03dms\n", int(cpu_time / 1000), int(cpu_time % 1000));
 
     // enregistrer l'image resultat
-    write_image(image, "partie_1_fruit.png");
-    write_image_hdr(image, "partie_1_fruit.hdr");
+    write_image(image, "partie_1_shadow.png");
+    //write_image_hdr(image, "partie_1_cornell.hdr");
 
     return 0;
 }

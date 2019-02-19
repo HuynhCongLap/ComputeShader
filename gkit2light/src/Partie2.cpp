@@ -271,47 +271,28 @@ int main( const int argc, const char **argv )
 
                 for(int i= 0; i < directions.size(); i++)
                 {
+
+                //******************Directions aléatoires*************************
                     // genere une direction
-                    //Vector w= directions(u01(rng), u01(rng)); // directions aléatoires
+                    Vector w= directions(u01(rng), u01(rng)); //
+                //*******************************************
 
-
-                    float cos0 = ( 1.0f - (2.0f*i + 1.0f)/(2.0f * n)); //  spirale de Fibonacci
-                    float perturbation = (std::sqrt(5.0) + 1.0f)/2.0f;
-                    Vector w= directions(cos0, (i*1.0f+0.5f)/perturbation);
-
+                //****************Spirale de Fibonacci***************************
+                    //float cos0 = ( 1.0f - (2.0f*i + 1.0f)/(2.0f * n)); //  spirale de Fibonacci
+                    //float perturbation = (std::sqrt(5.0) + 1.0f)/2.0f;
+                    //Vector w= directions(cos0, (i*1.0f+0.5f)/perturbation);
+                //*******************************************
                     // teste le rayon dans cette direction
                     Ray shadow(p + pn * .001f, p + w * scale);
                     if(bvh.visible(shadow))
                     {
-                        // calculer l'eclairage ambient :
-                        // en partant de la formulation de l'eclairage direct :
-                        // L_r(p, o) = \int L_i(p, w) * f_r(p, w -> o) * cos \theta dw
-                        // avec
-                        // L_i(p, w) = L_e(hit(p, w), -w) * V(hit(p, w), p)
-                        // L_e(q, v) = 1
-                        // donc L_i(p, w)= V(hit(p, w), p)
-                        // f_r() = 1 / pi
-
-                        // donc
-                        // L_r(p, w)= \int 1/pi * V(hit(p, w), p) cos \theta dw
-
-                        // et l'estimateur monte carlo s'ecrit :
-                        // L_r(p, w)= 1/n \sum { 1/pi * V(hit(p, w_i), p) * cos \theta_i } / { pdf(w_i) }
 
                         float cos_theta_i =  abs(dot(normalize(pn), normalize(w)));
-
-                        /*
-                        float cos0 = 1.0f - (2.0f*i + 1.0f)/(2.0f * n);
-                        float pert = (std::sqrt(5.0) + 1.0f)/2.0f;
-                        float phi= 2.f * float(M_PI) * (i + 0.5)/pert;
-                        float sin_theta= std::sqrt(std::max(0.f, 1.f - cos0*cos0));
-                        Vector wi = Vector(std::cos(phi) * sin_theta, std::sin(phi) * sin_theta, cos0);
-                        */
-                        factor += ( cos_theta_i * (1.0/M_PI) / directions.pdf(w) )/n*1.0 ;
+                        factor += (cos_theta_i * (1.0/M_PI) / directions.pdf(w) )/n*1.0 ;
                     }
                 }
-                Color Ambient = Color(0.3);
-                color = Diffuse +  Ambient* factor  ;
+                Color Ambient = Color(0.7);
+                color = Ambient* factor  ;
                 image(px, py)= Color(color, 1);
             }
         }
@@ -322,7 +303,7 @@ int main( const int argc, const char **argv )
     printf("cpu  %ds %03dms\n", int(cpu_time / 1000), int(cpu_time % 1000));
 
     // enregistrer l'image resultat
-    write_image(image, "partie_2_shadow.png");
+    write_image(image, "partie_2_cornell_random_256.png");
     //write_image_hdr(image, "partie_2_shadow.hdr");
 
     return 0;
